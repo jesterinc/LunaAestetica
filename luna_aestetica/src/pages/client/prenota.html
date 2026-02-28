@@ -1,8 +1,12 @@
 <!-- src/pages/prenota.html -->
 <template>
+
   <import from="./prenota.css"></import>
   <import from="../../components/custom-calendar"></import>
-
+  <import from="../../components/client-header"></import>
+  
+  <client-header></client-header>
+  
   <div class="prenota-wrapper">
     
     <div if.bind="step === 1" class="services-container">

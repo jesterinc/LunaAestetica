@@ -72,9 +72,7 @@ export class Prenota {
 
   async conferma() {
   
-    console.debug("Slot:", this.slotSelezionato, "Data:", this.dataSelezionata);
-  
-    if (!this.slotSelezionato || !this.dataSelezionata || this.carrello.length === 0) {
+      if (!this.slotSelezionato || !this.dataSelezionata || this.carrello.length === 0) {
   
       alert("Dati incompleti! Seleziona servizi, data e orario.")
       return
@@ -86,8 +84,6 @@ export class Prenota {
       start_time: this.slotSelezionato.ora
     }
   
-    console.log("Payload finale inviato:", payload)
-    
     if (!payload.service_ids || payload.service_ids.length === 0 || !payload.date || !payload.start_time) {
 
       console.error("Payload non valido:", payload)
@@ -97,12 +93,12 @@ export class Prenota {
   
     try {
 
-      const res = await this.api.salvaPrenotazione(payload);
-
-      if (res) {
+      const res = await this.api.salvaPrenotazione(payload)
       
-        alert("Prenotazione confermata!")
-        this.router.load('home')
+      if (res.status === 'success') {
+        
+        alert("Prenotazione effettuata con successo!")
+        await this.router.load('client-dashboard')
       }
     } 
     catch (e) {

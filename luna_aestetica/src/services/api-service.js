@@ -95,7 +95,7 @@ export class ApiService {
     
     try {
     
-      const response = await this.http.post('offered/servizi/prenota/', JSON.stringify(payload));
+      const response = await this.http.post('offered/servizi/prenota/', JSON.stringify(payload))
       
       if (!response.ok) {
 
@@ -136,5 +136,31 @@ export class ApiService {
       console.error("Errore API Register:", e)
       throw e
     }
+  }
+
+  async getClientConfig() {
+  
+    try {
+
+      const response = await this.http.get('settings/client-config/')
+      return response
+    } 
+    catch (e) {
+
+      console.warn("Usando settaggi di default")
+      return { show_prices: true, cancellation_limit_hours: 24 }
+    }
+  }
+  
+  async getMiePrenotazioni() {
+ 
+    const res = await this.http.get('meets/appointments/me/')
+    return res.json()
+  }
+
+  async cancellaPrenotazione(id) {
+  
+    const response = await this.http.post(`meets/appointments/${id}/cancel/`)
+    return response.ok
   }
 }

@@ -26,7 +26,8 @@ export class MyApp {
     { 
       path: 'client-dashboard', 
       component: () => import('./pages/client/client-dashboard.js').then(m => m.default || m.ClientDashboard), 
-      title: 'Dashboard cliente'
+      title: 'Dashboard cliente',
+      id: 'client-dashboard'
     },
     { 
       path: 'prenota', 
@@ -35,9 +36,16 @@ export class MyApp {
       id: 'prenota' 
     },
     { 
+      path: 'wallet', 
+      component: () => import('./pages/client/wallet.js').then(m => m.Wallet || m.default),
+      title: 'Wallet',
+      id: 'wallet' 
+    },
+    { 
       path: 'storico', 
       component: () => import('./pages/client/storico.js').then(m => m.default || m.Storico),
-      title: 'Storico prenotazioni cliente'
+      title: 'Storico prenotazioni cliente',
+      id: 'storico'
     },
     //{ 
     //  path: 'admin-dashboard', 

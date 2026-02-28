@@ -9,3 +9,13 @@ class BusinessSettings(models.Model):
   class Meta:
     db_table = "business_settings"
     verbose_name = "Impostazioni Aziendali"
+
+
+class GeneralSettings(models.Model):
+  cancellation_limit_hours = models.IntegerField(default=0)
+  modification_limit_hours = models.IntegerField(default=0)
+  show_prices_to_customer = models.BooleanField(default=False)
+
+  class Meta:
+    db_table = "general_settings"
+    verbose_name = "Impostazioni Generali"

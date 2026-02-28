@@ -1,14 +1,10 @@
 <!-- src/pages/storico.html -->
-<header class="topbar">
-  <div class="topbar-left">
-    <a load="../client-dashboard" class="back-btn">
-      <i data-lucide="arrow-left"></i> Dashboard
-    </a>
-  </div>
-</header>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<import from="../../components/client-header"></import>
+<client-header></client-header>
 
 <div class="dashboard-container">
-  <div class="login-card">
+  <div class="login-card" style="max-width: 600px;">
     <div class="logo">
       <div class="moon"></div>
       <h1>Luna <span>AEstetica</span></h1>
@@ -19,12 +15,38 @@
       
       <p if.bind="!prenotazioni.length" class="subtitle">Nessuna prenotazione trovata.</p>
 
-      <div repeat.for="p of prenotazioni" class="appointment-row">
-        <div class="appointment-info">
-          <strong>${p.servizio_nome}</strong>
-          <span>${p.data | dateFormat} - ${p.ora_inizio}</span>
+      <div repeat.for="p of prenotazioni" class="appointment-row ${p.is_future ? 'future-row' : 'past-row'}">
+        <let status.bind="getBookingStatus(p)"></let>
+
+        <div class="appointment-main">
+          <div class="appointment-info">
+            <strong repeat.for="s of p.services">${s.name}${!$last ? ', ' : ''}</strong>
+            <span class="date-time">
+              📅 ${formattaData(p.date)} 
+              ⏰ ${p.start_time}
+            </span>
+            <small class="duration">Durata: ${p.total_duration} min</small>
+            <strong if.bind="settings.show_prices" class="price-tag">€ ${p.total_price}</strong>
+          </div>
+
+          <span class="badge ${status.class}">
+            <i class="fas ${status.icon}"></i> ${status.label}
+          </span>
         </div>
-        <span class="badge ${getStatusClass(p.stato_codice)}">${p.stato_testo}</span>
+
+        <div class="appointment-actions" if.bind="p.is_future && !p.is_cancelled">
+          <button if.bind="p.is_cancellable"
+                  click.trigger="annulla(p.id)" 
+                  class="btn-mini btn-red">
+            <i data-lucide="trash-2"></i> Annulla
+          </button>
+          
+          <button if.bind="p.is_editable" 
+                  click.trigger="cambia(p.id)" 
+                  class="btn-mini btn-gold">
+            <i data-lucide="edit-3"></i> Cambia
+          </button>
+        </div>
       </div>
       
     </div>

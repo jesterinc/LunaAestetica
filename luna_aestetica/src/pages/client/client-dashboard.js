@@ -14,6 +14,16 @@ export default class ClientDashboard {
     this.router.load('/prenota')
   }
 
+  apriStorico() {
+
+    this.router.load('/storico')
+  }
+
+  apriWallet() {
+
+    this.router.load('/wallet')
+  }
+
   async attaching() {
 
     this.username = this.authService.currentUser?.username || "Ospite"

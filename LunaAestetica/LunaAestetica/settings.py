@@ -53,7 +53,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'LunaAestetica.urls'
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+#DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -179,7 +179,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_TZ = False
+USE_TZ = True
 
 STATIC_URL = 'static/'
 
@@ -192,5 +192,7 @@ NOTIFIES_KINDS = (
 )
 
 DAY_CHOICES = [(0, 'Lunedì'), (1, 'Martedì'), (2, 'Mercoledì'), (3, 'Giovedì'), (4, 'Venerdì'), (5, 'Sabato'), (6, 'Domenica')]
+
+STATUS_CHOICES = [('PEND', 'In Arrivo'),('CONF', 'Confermato'),('CANC', 'Cancellato'),]
 
 AUTH_USER_MODEL = 'login.Users'

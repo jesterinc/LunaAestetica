@@ -1,0 +1,98 @@
+/* src/pages/client/storico/storico.css */
+.appointment-row {
+  border-left: 4px solid #ccc;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.future-row { border-left-color: goldenrod; color: #000} /* Oro per il futuro */
+
+.past-row { opacity: 0.7; border-left-color: #666; } /* Grigio per il passato */
+
+.appointment-main { display: flex; justify-content: space-between; align-items: start; }
+
+.appointment-actions { margin-top: 10px; display: flex; gap: 10px; justify-content: flex-end; }
+
+.btn-mini { padding: 5px 10px; font-size: 0.8rem; cursor: pointer; border-radius: 3px; border: 1px solid; }
+
+.btn-red { color: #ff4444; border-color: #ff4444; background: transparent; }
+
+.btn-gold { color: #b8860b; border-color: #b8860b; background: transparent; }
+
+.appointment-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-time {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+
+.confirmed{
+  background-color: darkgreen;
+  color: white;
+}
+
+.pending{
+  background-color: goldenrod;
+  color: black;
+}
+
+.cancelled{
+  background-color: darkred;
+  color: white;
+}
+
+status-icon-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.status-indicator i {
+  color: white !important; /* Forza il bianco sulle icone */
+  display: block;
+}
+
+.status-pending {
+  background-color: #fbc02d; /* Oro pieno */
+  border: 2px solid #f9a825;
+}
+
+.status-confirmed {
+  background-color: #4caf50; /* Verde pieno */
+  border: 2px solid #388e3c;
+}
+
+.status-cancelled {
+  background-color: #f44336; /* Rosso pieno */
+  border: 2px solid #d32f2f;
+}
+
+.btn-mini i, 
+.btn-mini svg {
+  margin-right: 2.5rem;
+  vertical-align: middle;
+}
+
+.btn-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge {
+  margin-left: 1.5rem !important;
+}

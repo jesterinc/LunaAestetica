@@ -4,115 +4,70 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from settings.models import BusinessSettings
+from django.utils import timezone
+
+from settings.models import BusinessSettings, GeneralSettings
 
 from meets.models import Appointment
 from meets.api.serializers import AppointmentSerializer
 from offered_services.models import Service
 
 from datetime import datetime, timedelta
-import datetime as dt_module # Alias per evitare conflitti con la classe datetime
+import datetime as dt_module
 
 class AppointmentViewSet(viewsets.ModelViewSet):
-    queryset = Appointment.objects.all()
-    serializer_class = AppointmentSerializer
-    
-    def get_permissions(self):
-
-      if self.action in ['create', 'salva_prenotazione']:
-
-        return [IsAuthenticated()]
-
-      return []
-
-    def create(self, request, *args, **kwargs):
-
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-"""
-class AppointmentViewSet(viewsets.ModelViewSet):
-
   queryset = Appointment.objects.all()
   serializer_class = AppointmentSerializer
 
-  @action(detail=False, methods=['get'])
-  def date_disponibili(self, request):
+  def get_permissions(self):
 
-    today = dt_module.date.today()
-    date_valide = []
-    
-    for i in range(30):
-      
-      giorno = today + timedelta(days=i)
-      
-      if giorno.weekday() != 6:
-      
-        date_valide.append(giorno.strftime('%Y-%m-%d'))
-    
-    return Response(date_valide)
+    if self.action in ['me', 'create', 'salva_prenotazione']:
 
-  @action(detail=False, methods=['get'])
-  def orari_liberi(self, request):
+      return [IsAuthenticated()]
+
+    return [IsAuthenticated()]
+
+  def get_queryset(self):
   
-    data_str = request.query_params.get('data')
-    durata_richiesta = request.query_params.get('durata') # La durata totale del carrello (es. 105)
+    return Appointment.objects.filter(customer=self.request.user).order_by('-date')
 
-    if not data_str or not durata_richiesta:
+  def perform_create(self, serializer):
   
-      return Response({"error": "Data e durata obbligatori"}, status=400)
+    serializer.save(customer=self.request.user)
 
-    try:
+  @action(detail=False, methods=['get'], url_path='me')
+  def me(self, request):
+    """Endpoint: api/v1/meets/appointments/me/"""
+    queryset = self.get_queryset()
+    serializer = self.get_serializer(queryset, many=True)
+    return Response(serializer.data)
 
-      durata_richiesta = int(durata_richiesta)
-      config = BusinessSettings.objects.first()
+  @action(detail=True, methods=['post'])
+  def cancel(self, request, pk=None):
 
-      if not config:
+    appointment = self.get_object()
+    if not appointment.is_cancellable:
 
-        return Response({"error": "Configurazione mancante"}, status=500)
+      return Response(
+        {"detail": "Non è più possibile annullare questo appuntamento."},
+        status=status.HTTP_400_BAD_REQUEST
+      )
 
-      data_selezionata = datetime.strptime(data_str, '%Y-%m-%d').date()
-      esistenti = Appointment.objects.filter(date=data_selezionata).prefetch_related('services')
-      orari_disponibili = []
-      corrente = datetime.combine(data_selezionata, config.start_time)
-      limite_fine = datetime.combine(data_selezionata, config.end_time)
+    appointment.status = 'CANC'
+    appointment.save()
+    return Response({
+      'status': 'success',
+      'message': 'Prenotazione annullata correttamente'
+    })
 
-      while corrente + timedelta(minutes=durata_richiesta) <= limite_fine:
 
-        inizio_test = corrente
-        fine_test = corrente + timedelta(minutes=durata_richiesta)
-        sovrapposto = False
-        
-        for app in esistenti:
+class CustomerAppointmentViewSet(viewsets.ReadOnlyModelViewSet):
+  permission_classes = [IsAuthenticated]
+  serializer_class = AppointmentSerializer
 
-          durata_app_esistente = sum(s.duration_minutes for s in app.services.all())
-          app_inizio = datetime.combine(data_selezionata, app.start_time)
-          app_fine = app_inizio + timedelta(minutes=durata_app_esistente)
-          
-          if inizio_test < app_fine and fine_test > app_inizio:
+  def get_queryset(self):
 
-            sovrapposto = True
-            break
-        
-        if not sovrapposto:
+    return Appointment.objects.filter(customer=self.request.user).order_by('-date', '-start_time')
 
-          orari_disponibili.append({
-            "id": inizio_test.strftime('%H%M'),
-            "ora": inizio_test.strftime('%H:%M')
-          })
-        
-        corrente += timedelta(minutes=config.minute_increment)
 
-      return Response(orari_disponibili)
 
-    except Exception as e:
-
-      print(f"ERRORE SERVER: {str(e)}") # Vedi l'errore nel terminale
-      return Response({"error": str(e)}, status=500)
-"""
