@@ -1,0 +1,42 @@
+<!-- src/pages/auth/login/login.html -->
+<div class="dashboard-container">
+  <div class="login-card">
+    <div class="logo">
+
+      <div class="moon">
+      </div>
+      <h1>Luna <span>AEstetica</span></h1>
+
+    </div>
+    
+    <p class="subtitle"> Inserisci la tua login e la tua password per accedere all'applicazione </p>
+    <form submit.trigger="submitLogin()"> 
+      <div class="input-group">
+        <label for="username">Inserisci la tua login</label>
+        <input type="text" id="username" value.bind="username" placeholder="inserisci il tuo nome utente" required>
+      </div>
+    
+      <div class="input-group password-group">
+        <label for="password">Inserisci la tua password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" value.bind="password" placeholder="Inserisci la tua password" required>
+          <button type="button" id="togglePassword">👁</button>
+        </div>
+      </div>
+    
+      <button type="submit" class="btn-primary" disabled.bind="isLoading">
+        ${isLoading ? 'Accesso in corso...' : 'Entra'}
+      </button>
+    </form>
+    
+    <div class="links">
+
+      <p>Hai dimenticato la tua password?</p>
+      <a load="recover" class="forgot">Clicca qui</a>
+    
+      <p>Non sei registrata/o?</p>
+      <a click.trigger="vaiARegister()" class="register" style="cursor: pointer">Registrati</a>
+
+    </div>
+</div>
+

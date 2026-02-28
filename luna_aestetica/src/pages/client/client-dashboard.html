@@ -1,0 +1,24 @@
+<!-- src/pages/client/dashboard/client-dashboard.html -->
+<div class="dashboard-container">
+  <div class="login-card">
+    <div class="logo">
+      <div class="moon"></div>
+      <h1>Luna <span>AEstetica</span></h1>
+    </div>
+    <p class="subtitle">Benvenuta/o, ${username}</p>
+
+    <div class="client-actions">
+      <a click.trigger="prenota()" class="btn-action gold" style="cursor: pointer">
+        <i data-lucide="calendar-plus"></i> Prenota
+      </a>
+
+      <a load="/storico" class="btn-action blue">
+        <i data-lucide="clock"></i> Storico prenotazioni
+      </a>
+      
+      <button click.trigger="authService.logout()" class="btn-action red">
+        <i data-lucide="log-out"></i> Esci
+      </button>
+    </div>
+  </div>
+</div>

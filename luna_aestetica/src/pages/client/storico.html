@@ -1,0 +1,32 @@
+<!-- src/pages/storico.html -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a load="../client-dashboard" class="back-btn">
+      <i data-lucide="arrow-left"></i> Dashboard
+    </a>
+  </div>
+</header>
+
+<div class="dashboard-container">
+  <div class="login-card">
+    <div class="logo">
+      <div class="moon"></div>
+      <h1>Luna <span>AEstetica</span></h1>
+    </div>
+    <p class="subtitle">Storico delle tue prenotazioni</p>
+    
+    <div class="appointments-list"> 
+      
+      <p if.bind="!prenotazioni.length" class="subtitle">Nessuna prenotazione trovata.</p>
+
+      <div repeat.for="p of prenotazioni" class="appointment-row">
+        <div class="appointment-info">
+          <strong>${p.servizio_nome}</strong>
+          <span>${p.data | dateFormat} - ${p.ora_inizio}</span>
+        </div>
+        <span class="badge ${getStatusClass(p.stato_codice)}">${p.stato_testo}</span>
+      </div>
+      
+    </div>
+  </div>
+</div>

@@ -1,0 +1,77 @@
+[
+  {
+    "model": "offered_services.service",
+    "pk": 1,
+    "fields": {
+      "name": "Taglio e Piega",
+      "price": "45.00",
+      "duration_minutes": 60,
+      "active": true
+    }
+  },
+  {
+    "model": "offered_services.service",
+    "pk": 2,
+    "fields": {
+      "name": "Colore",
+      "price": "60.00",
+      "duration_minutes": 90,
+      "active": true
+    }
+  },
+  {
+    "model": "offered_services.openinghour",
+    "pk": 1,
+    "fields": {
+      "day_of_week": 1,
+      "start_hour": "09:00:00",
+      "end_hour": "18:00:00",
+      "date_start": null,
+      "date_end": null
+    }
+  },
+  {
+    "model": "offered_services.openinghour",
+    "pk": 2,
+    "fields": {
+      "day_of_week": 2,
+      "start_hour": "09:00:00",
+      "end_hour": "18:00:00",
+      "date_start": null,
+      "date_end": null
+    }
+  },
+  {
+    "model": "offered_services.openinghour",
+    "pk": 3,
+    "fields": {
+      "day_of_week": 3,
+      "start_hour": "09:00:00",
+      "end_hour": "18:00:00",
+      "date_start": null,
+      "date_end": null
+    }
+  },
+  {
+    "model": "offered_services.openinghour",
+    "pk": 4,
+    "fields": {
+      "day_of_week": 4,
+      "start_hour": "09:00:00",
+      "end_hour": "18:00:00",
+      "date_start": null,
+      "date_end": null
+    }
+  },
+  {
+    "model": "offered_services.openinghour",
+    "pk": 5,
+    "fields": {
+      "day_of_week": 5,
+      "start_hour": "08:30:00",
+      "end_hour": "13:00:00",
+      "date_start": null,
+      "date_end": null
+    }
+  }
+]

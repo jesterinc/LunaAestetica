@@ -1,0 +1,22 @@
+<!-- src/components/custom-calendar.html -->
+<template>
+  <div class="calendar-container">
+    <div class="calendar-header">
+      <button click.trigger="prevMonth()">&lt;</button>
+      <span>${monthNames[viewDate.getMonth()]} ${viewDate.getFullYear()}</span>
+      <button click.trigger="nextMonth()">&gt;</button>
+    </div>
+
+    <div class="calendar-weekdays">
+      <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
+    </div>
+
+    <div class="calendar-grid">
+      <div repeat.for="d of days" 
+           click.trigger="select(d)"
+           class="calendar-day ${!d.day ? 'empty' : ''} ${d.isEnabled ? 'enabled' : 'disabled'} ${d.isSelected ? 'selected' : ''}">
+        ${d.day}
+      </div>
+    </div>
+  </div>
+</template>

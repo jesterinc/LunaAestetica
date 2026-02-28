@@ -1,0 +1,33 @@
+/* offered_services/fixtures/initial_data.json */
+[
+  {
+    "model": "offered_services.service",
+    "pk": 1,
+    "fields": {
+      "name": "Massaggio Relax",
+      "price": "50.00",
+      "duration_minutes": 60,
+      "active": true
+    }
+  },
+  {
+    "model": "offered_services.service",
+    "pk": 2,
+    "fields": {
+      "name": "Pulizia Viso",
+      "price": "40.00",
+      "duration_minutes": 45,
+      "active": true
+    }
+  },
+  {
+    "model": "offered_services.service",
+    "pk": 3,
+    "fields": {
+      "name": "Manicure",
+      "price": "25.00",
+      "duration_minutes": 30,
+      "active": true
+    }
+  }
+]

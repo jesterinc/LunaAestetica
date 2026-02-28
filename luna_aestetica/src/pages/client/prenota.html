@@ -1,0 +1,93 @@
+<!-- src/pages/prenota.html -->
+<template>
+  <import from="./prenota.css"></import>
+  <import from="../../components/custom-calendar"></import>
+
+  <div class="prenota-wrapper">
+    
+    <div if.bind="step === 1" class="services-container">
+      <h2 class="title">Cosa vorresti fare?</h2>
+      <p class="subtitle">Seleziona uno o più trattamenti</p>
+
+      <div class="services-list">
+        <div repeat.for="s of servizi" 
+             click.trigger="toggleServizio(s)"
+             class="service-item ${s.selected ? 'is-selected' : ''}">
+          <div class="service-main">
+            <span class="service-title">${s.name}</span>
+            <span class="service-duration">${s.duration_minutes} min</span>
+          </div>
+          <div class="service-side">
+            <span class="service-price">€ ${s.price}</span>
+            <div class="status-dot"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="floating-cart" if.bind="carrello.length > 0">
+        <div class="cart-info">
+          <span class="cart-count">${carrello.length} servizi</span>
+          <span class="cart-time">${durataTotale} min</span>
+        </div>
+        <button class="btn-fab" click.trigger="vaiAlCalendario()">
+          <span>Prosegui</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div if.bind="step === 2" class="step-2-container">
+      
+      <div class="card-riepilogo">
+        <div class="riepilogo-header">
+          <h4>Riepilogo</h4>
+          <button class="btn-modifica" click.trigger="step = 1">Modifica</button>
+        </div>
+        <div class="riepilogo-info-rapida">
+          <span><i class="fas fa-concierge-bell"></i> ${carrello.length} servizi</span> | 
+          <span><i class="far fa-clock"></i> ${durataTotale} min</span> | 
+          <span class="prezzo-evidenziato">€ ${prezzoTotale}</span>
+        </div>
+      </div>
+
+      <div class="calendar-card">
+        <custom-calendar 
+          selected-date.two-way="dataSelezionata" 
+          enabled-dates.bind="dateAbilitate"
+          change.trigger="caricaOrari()"> 
+        </custom-calendar>
+      </div>
+
+      <div class="orari-section" if.bind="dataSelezionata">
+        <h5 class="orari-title">
+          <i class="far fa-clock"></i> Orari per il ${dataSelezionata}
+        </h5>
+        
+        <div if.bind="isLoadingOrari" class="loader-container">
+          <div class="spinner"></div>
+          <p>Verifico disponibilità...</p>
+        </div>
+      
+        <div if.bind="!isLoadingOrari && orariLiberi.length > 0" class="orari-grid">
+          <button repeat.for="slot of orariLiberi" 
+            class="ora-item ${slotSelezionato === slot ? 'is-selected' : ''}"
+            click.trigger="slotSelezionato = slot">
+            <span class="ora-label">${slot.ora}</span>
+          </button>
+        </div>
+      
+        <div if.bind="!isLoadingOrari && orariLiberi.length === 0" class="empty-state">
+          <i class="fas fa-calendar-times"></i>
+          <p>Nessun orario disponibile di ${durataTotale} min. Prova un altro giorno!</p>
+        </div>
+
+        <div class="footer-action" if.bind="slotSelezionato">
+          <button class="btn-conferma" click.trigger="conferma()">
+            Conferma per le ${slotSelezionato.ora}
+          </button>
+        </div>
+      </div>
+      
+    </div> 
+  </div> 
+</template>

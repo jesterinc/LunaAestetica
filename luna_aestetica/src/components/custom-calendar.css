@@ -1,0 +1,113 @@
+/* src/components/custom-calendar.css */
+.btn-slot {
+  padding: 10px;
+  border: 1px solid #E67E22;
+  background: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-slot.selected {
+  background: #E67E22;
+  color: white;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-size: 0.8em;
+  color: #888;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.calendar-day.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none; /* Impedisce il click */
+}
+
+.calendar-day.enabled {
+  cursor: pointer;
+  font-weight: bold;
+  color: #d4af37; /* Oro per i giorni disponibili */
+}
+
+.calendar-day.selected {
+  background-color: #d4af37;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.calendar-day.empty {
+  pointer-events: none;
+}
+
+.custom-calendar-container {
+  max-width: 300px;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.day-cell {
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.day-cell.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.day-cell.enabled {
+  font-weight: bold;
+  color: #333;
+}
+
+.day-cell.enabled:hover {
+  background: #fdf2e9; /* Light orange */
+}
+
+.day-cell.selected {
+  background: #E67E22 !important; /* Arancione Fuoriporto */
+  color: white !important;
+}
+
+.day.disabled {
+  opacity: 0.2;
+  pointer-events: none; /* Fondamentale: impedisce il click fisico */
+  cursor: not-allowed;
+}
+
+.day.enabled {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--gold-color, #d4af37); /* Un colore che spicca */
+}
+
+.orari-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+

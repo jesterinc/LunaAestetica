@@ -1,0 +1,57 @@
+<!-- src/pages/auth/register/register.html -->
+<template>
+  <div class="dashboard-container">
+    <div class="login-card">
+      <div class="logo">
+        <div class="moon"></div>
+        <h1>Luna <span>AEstetica</span></h1>
+      </div>
+      
+      <p class="subtitle">Crea il tuo account per prenotare i tuoi trattamenti</p>
+
+      <form submit.trigger="onRegister()">
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label for="first_name">Nome</label>
+            <input type="text" id="first_name" value.bind="user.first_name" placeholder="Il tuo nome" required>
+          </div>
+          <div class="input-group">
+            <label for="last_name">Cognome</label>
+            <input type="text" id="last_name" value.bind="user.last_name" placeholder="Il tuo cognome" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" value.bind="user.email" placeholder="esempio@mail.it" required>
+        </div>
+
+        <div class="input-group">
+          <label for="phone">Numero di Telefono (Obbligatorio)</label>
+          <input type="tel" id="phone" value.bind="user.phone" placeholder="333 1234567" required>
+        </div>
+
+        <div class="input-group password-group">
+          <label for="password">Scegli una password</label>
+          <div class="password-wrapper">
+            <input type="${showPassword ? 'text' : 'password'}" id="password" 
+                   value.bind="user.password" placeholder="Minimo 8 caratteri" required>
+            <button type="button" click.trigger="showPassword = !showPassword">
+              ${showPassword ? '🙈' : '👁'}
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" disabled.bind="isLoading">
+          ${isLoading ? 'Creazione account...' : 'Registrati ora'}
+        </button>
+      </form>
+
+      <div class="links">
+        <p>Hai già un account?</p>
+        <a load="login" class="register">Torna al Login</a>
+      </div>
+    </div>
+  </div>
+</template>
