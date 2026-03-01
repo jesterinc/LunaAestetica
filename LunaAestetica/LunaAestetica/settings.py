@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'days_hours',
     'meets',
     'offered_services',
+    'payments',
     'settings',
 ]
 
@@ -185,6 +186,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+STRIPE_PUBLIC_KEY = "pk_live_51PMC75Dsfh4yrCb84ZiY0dnheGCXCKIRKa0kppEArpifuAZ4hkOLYfCKB20334fspYN7jWxs0LgIxUWZoiN9Shym00ZFKIas29"
+STRIPE_SECRET_KEY = "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"
+
+STRIPE_WEBHOOK_SECRET = "whsec_0f8c705b5407116544f4e50b6752f357bd6fe157aa8276ac21e779d01280c05b"
+
 NOTIFIES_KINDS = (
     ('pre','Nuova prenotazione'),
     ('can','Prenotazione cancellata'),
@@ -195,4 +201,12 @@ DAY_CHOICES = [(0, 'Lunedì'), (1, 'Martedì'), (2, 'Mercoledì'), (3, 'Giovedì
 
 STATUS_CHOICES = [('PEND', 'In Arrivo'),('CONF', 'Confermato'),('CANC', 'Cancellato'),]
 
+WALLET_TRANSACTION_TYPES = [('RELOAD', 'Ricarica via Stripe'),('PAYMENT', 'Pagamento Appuntamento'),('REFUND', 'Rimborso (Credito)'),('CASH_OUT', 'Rimborso in Contanti (Manuale)'),('ADJUST', 'Rettifica Gestionale'),]
+
+PAYMENT_STATUS_CHOICES = [('UNPAID', 'Da Pagare'),('PARTIAL', 'Acconto Versato'),('PAID', 'Saldato'),('REFUNDED', 'Rimborsato nel Wallet'),]
+
 AUTH_USER_MODEL = 'login.Users'
+
+CARD_FOR_TEST = "4242424242424242" # 4000056655665556, 5555555555554444, 2223003122003222, 5200828282828210, 5105105105105100
+CARD_DATE = "12/34"
+CVC = "223"

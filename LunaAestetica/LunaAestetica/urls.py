@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/v1/offered/', include('offered_services.api.urls')), 
     path('api/v1/meets/', include('meets.api.urls')),
     path('api/v1/settings/', include('settings.api.urls')),
+    path('api/v1/payments/', include('payments.api.urls')),
 ]
