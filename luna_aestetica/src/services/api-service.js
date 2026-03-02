@@ -116,6 +116,19 @@ export class ApiService {
     return res.ok ? res.json() : []
   }
 
+  async getWallet() {
+
+    const response = await this.http.fetch('payments/wallet/', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Token ${localStorage.getItem('token')}`,
+            'Accept': 'application/json'
+        }
+    })
+    
+    return response
+  }
+
   async getWalletStatus() {
   
     const res = await this.http.get('payments/wallet/')

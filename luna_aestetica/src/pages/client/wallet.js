@@ -15,7 +15,28 @@ export class Wallet {
     showWallet = true
 
     async loading() {
-        console.log("Wallet in caricamento...")
+    
+        console.log("Wallet in caricamento...");
+    
+        try {
+    
+            const response = await this.api.getWallet()
+    
+            if (response.ok) {
+    
+                this.wallet = await response.json()
+                console.log("Saldo recuperato con successo:", this.wallet.balance)
+            } 
+            else {
+            
+                console.error("Errore server nel recupero wallet")
+            }
+        } 
+        catch (e) {
+        
+            console.error("Errore di rete nel recupero wallet:", e)
+        }
+        
         await this.loadInitialData()
     }
 
@@ -52,7 +73,6 @@ export class Wallet {
         }
     }
 
-    // NUOVO METODO UNIFICATO PER IL REDIRECT
     async executeStripeRedirect(type, amountInCents, appointmentIds = []) {
         this.isProcessing = true
         try {
@@ -76,9 +96,27 @@ export class Wallet {
         }
     }
 
-    // AGGIORNATO: Ora la ricarica usa il redirect
     selectTopup(amount) {
+
         const amountInCents = Math.round(amount * 100)
         this.executeStripeRedirect('WALLET_RELOAD', amountInCents, [])
+    }
+
+    async refreshWalletData() {
+
+        try {
+
+            const response = await this.api.getWallet()
+
+            if (response.ok) {
+
+                this.wallet = await response.json()
+                console.log("Saldo aggiornato ricevuto:", this.wallet.balance)
+            }
+        } 
+        catch (e) {
+        
+            console.error("Errore nel recupero del wallet:", e)
+        }
     }
 }

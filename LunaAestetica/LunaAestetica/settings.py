@@ -188,9 +188,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+
+
+
 NOTIFIES_KINDS = (
     ('pre','Nuova prenotazione'),
-    ('can','Prenotazione cancellata'),
+    ('can','Prenotazione can1cellata'),
     ('usr','Nuovo utente registrato'),
 )
 
