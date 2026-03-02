@@ -1,4 +1,54 @@
 <!-- src/pages/client/wallet.html -->
-<import from="../../components/client-header"></import>
-<client-header></client-header>
-<h2>Pagamenti & Wallet</h2>
+<template>
+  <import from="../../components/client-header"></import>
+  <client-header></client-header>
+  <div class="checkout-wrapper">
+    
+    <div class="checkout-section reservation-pay" if.bind="showReservationPay">
+      <div class="info-box">
+        <h4>Dettaglio Appuntamento</h4>
+        <p class="service-name">${appointment.serviceName}</p>
+        <p class="amount-due">Da pagare ora: <strong>${appointment.totalPrice} €</strong></p>
+      </div>
+    </div>
+
+    <hr class="divider" if.bind="showReservationPay">
+
+    <div class="checkout-section stripe-core">
+      <h4>Metodo di Pagamento</h4>
+      <div id="payment-element">
+        </div>
+      
+      <button class="btn-pay-main" click.trigger="processAction()" disabled.bind="isProcessing || !clientSecret">
+        <span if.bind="!isProcessing">Conferma e Paga</span>
+        <span if.bind="isProcessing">Elaborazione...</span>
+      </button>
+      <div id="payment-message" class="hidden"></div>
+    </div>
+
+    <hr class="divider" if.bind="showWallet">
+
+    <div class="checkout-section wallet-status" if.bind="showWallet">
+      <div class="wallet-card">
+        <div class="balance-info">
+          <span>Il tuo Credito:</span>
+          <span class="price">${wallet.balance} €</span>
+        </div>
+        
+        <div class="refunds-badge" if.bind="wallet.hasRefunds">
+          <small>Hai rimborsi disponibili nel wallet</small>
+        </div>
+
+        <div class="quick-topup">
+          <p>Ricarica rapida:</p>
+          <div class="topup-btns">
+            <button click.trigger="selectTopup(10)">+10€</button>
+            <button click.trigger="selectTopup(20)">+20€</button>
+            <button click.trigger="selectTopup(50)">+50€</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>

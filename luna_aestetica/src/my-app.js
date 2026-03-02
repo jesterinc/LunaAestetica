@@ -1,10 +1,12 @@
 /* src/my-app.js */
 import { IRouter } from '@aurelia/router'
 import { resolve } from '@aurelia/kernel'
+import { HttpClient } from '@aurelia/fetch-client'
 
 export class MyApp {
 
   router = resolve(IRouter)
+  http = resolve(HttpClient)
 
   static routes = [
     { 
@@ -35,17 +37,23 @@ export class MyApp {
       title: 'Prenota',
       id: 'prenota' 
     },
-    { 
-      path: 'wallet', 
-      component: () => import('./pages/client/wallet.js').then(m => m.Wallet || m.default),
-      title: 'Wallet',
-      id: 'wallet' 
-    },
+    //{ 
+    //  path: 'wallet', 
+    //  component: () => import('./pages/client/wallet.js').then(m => m.Wallet || m.default),
+    //  title: 'Wallet',
+    //  id: 'wallet' 
+    //},
     { 
       path: 'storico', 
       component: () => import('./pages/client/storico.js').then(m => m.default || m.Storico),
       title: 'Storico prenotazioni cliente',
       id: 'storico'
+    },
+    { 
+      path: 'client/wallet', 
+      id: 'wallet', 
+      title: 'Pagamenti e Wallet',
+      component: () => import('./pages/client/wallet.js').then(m => m.default || m.Wallet),
     },
     //{ 
     //  path: 'admin-dashboard', 

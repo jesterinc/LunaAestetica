@@ -70,41 +70,56 @@ export class Prenota {
     }
   }
 
+  get carrello() {
+  
+    return this.servizi.filter(s => s.selected)
+  }
+
   async conferma() {
   
-      if (!this.slotSelezionato || !this.dataSelezionata || this.carrello.length === 0) {
-  
-      alert("Dati incompleti! Seleziona servizi, data e orario.")
+    if (!this.slotSelezionato || !this.dataSelezionata || this.carrello.length === 0) {
+
+      alert("Seleziona i servizi e l'orario!")
       return
     }
-      
+  
+    const totaleCalcolato = parseFloat(this.prezzoTotale)
+    const nomiServizi = this.carrello.map(s => s.name).join(", ")
     const payload = {      
       service_ids: this.carrello.map(s => s.id),
       date: this.dataSelezionata,
       start_time: this.slotSelezionato.ora
     }
   
-    if (!payload.service_ids || payload.service_ids.length === 0 || !payload.date || !payload.start_time) {
-
-      console.error("Payload non valido:", payload)
-      alert("Errore nella preparazione dei dati.")
-      return
-    }
-  
     try {
-
+     
       const res = await this.api.salvaPrenotazione(payload)
-      
-      if (res.status === 'success') {
-        
-        alert("Prenotazione effettuata con successo!")
+
+      if (res.id) {
+    
+        const response = await this.api.getClientConfig()
+        const config = (response && typeof response.json === 'function') ? await response.json() : response
+
+        console.debug("+++++ payment_policy", config.payment_policy)
+
+        if (config.payment_policy != 'NONE') {
+
+          const datiAppuntamento = {
+              id: res.id,
+              totalPrice: totaleCalcolato,
+              serviceName: nomiServizi
+          }
+          sessionStorage.setItem('pending_appointment', JSON.stringify(datiAppuntamento))
+          await this.router.load('client/wallet')
+          return
+        }
         await this.router.load('client-dashboard')
-      }
+      }    
     } 
     catch (e) {
     
-      console.error("Errore salvataggio:", e)
-      alert("Errore durante la prenotazione: " + e.message)
+      console.error("Errore salvataggio:", e)    
+      alert("Si è verificato un errore durante il salvataggio.")
     }
   }
 
@@ -120,18 +135,27 @@ export class Prenota {
 
   get durataTotale() {
     
-    return this.carrello.reduce((acc, s) => acc + (s.duration_minutes || 0), 0)
+    return this.carrello.reduce((acc, s) => {
+    
+      const d = parseInt(s.duration_minutes || s.duration) || 0
+      return acc + d
+    }, 0)
   }
-
-  get carrello() {
-  
-    return this.servizi.filter(s => s.selected)
-  }
-
 
   isSelezionato(id) {
   
     return this.carrello.some(s => s.id === id)
+  }
+
+  get prezzoTotale() {
+  
+    const totale = this.carrello.reduce((acc, s) => {
+
+      const p = parseFloat(s.price) || 0
+      return acc + p
+    }, 0)
+    
+    return totale.toFixed(2)
   }
 
   async selezionaServizio(servizio) {
@@ -193,10 +217,5 @@ export class Prenota {
     } finally {
       this.isLoading = false;
     }
-  }
-
-  get prezzoTotale() {
-
-    return this.carrello.reduce((acc, s) => acc + parseFloat(s.price || 0), 0).toFixed(2)
   }
 }

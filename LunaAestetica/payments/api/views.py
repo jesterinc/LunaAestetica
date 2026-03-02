@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
@@ -10,6 +11,8 @@ from rest_framework import viewsets, permissions, views, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
+
+import json
 
 import stripe
 from decimal import Decimal
@@ -37,37 +40,62 @@ class WalletViewSet(viewsets.ReadOnlyModelViewSet):
     serializer = self.get_serializer(wallet)
     return Response(serializer.data)
 
+
 class StripeCheckoutView(views.APIView):
   def post(self, request):
+      
     try:
+
       data = request.data
-      amount_to_charge = Decimal('0.00')
-      metadata = {
-        'customer_id': request.user.id,
-        'type': data.get('type') 
-      }
-      if data.get('type') == 'APPOINTMENT_PAY':
+      p_type = data.get('type') # 'APPOINTMENT' o 'WALLET_RELOAD'
+      if data.get('amount'):
+
+        amount_in_cents = int(data.get('amount'))
+        amount_to_charge = Decimal(amount_in_cents) / 100
+
+      else:
+
         appointment_ids = data.get('appointment_ids', [])
         appointments = Appointment.objects.filter(id__in=appointment_ids, customer=request.user)
-        total = sum(app.remaining_amount for app in appointments)
-        amount_to_charge = total
-        metadata['appointment_ids'] = ",".join(map(str, appointment_ids))
-      elif data.get('type') == 'WALLET_RELOAD':
-        amount_to_charge = Decimal(str(data.get('amount')))
-        metadata['is_reload'] = 'true'
+        amount_to_charge = sum(app.remaining_amount for app in appointments)
 
-      intent = stripe.PaymentIntent.create(
-        amount=int(amount_to_charge * 100),
-        currency='eur',
+      if amount_to_charge <= 0:
+
+        return Response({'error': 'L\'importo deve essere maggiore di zero'}, status=400)
+
+      metadata = {
+        'customer_id': request.user.id,
+        'type': p_type,
+        'appointment_ids': ",".join(map(str, data.get('appointment_ids', []))) if data.get('appointment_ids') else ""
+      }
+
+      checkout_session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+          'price_data': {
+            'currency': 'eur',
+            'product_data': {
+              'name': 'Pagamento Prenotazione' if p_type != 'WALLET_RELOAD' else 'Ricarica Wallet',
+            },
+            'unit_amount': int(amount_to_charge * 100),
+          },
+          'quantity': 1,
+        }],
+        mode='payment',
         metadata=metadata,
-        automatic_payment_methods={'enabled': True},
+        success_url=settings.FRONTEND_URL + '/#/client-dashboard?payment=success',
+        cancel_url=settings.FRONTEND_URL + '/#/client-dashboard?payment=cancel',
       )
+
       return Response({
-        'clientSecret': intent.client_secret, 
-        'amount': amount_to_charge
+        'url': checkout_session.url,
+        'id': checkout_session.id
       })
+
     except Exception as e:
+
       return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class StripeWebhookView(APIView):
@@ -89,45 +117,72 @@ class StripeWebhookView(APIView):
       print(f">>> ERRORE VALIDAZIONE FIRMA: {e}")
       return HttpResponse(status=400)
 
-    if event['type'] == 'payment_intent.succeeded':
+    if event['type'] == 'checkout.session.completed': #'payment_intent.succeeded':
       intent = event['data']['object']
       self.conferma_pagamento(intent)
 
     return HttpResponse(status=200)
 
-  def conferma_pagamento(self, intent):
-    metadata = intent.get('metadata', {})
-    print(f"--- DEBUG WEBHOOK: Dati evento: {intent.get('id')} ---")
-    print(f"Metadata estratti: {metadata}")
+  def conferma_pagamento(self, session):
+  
+    # Recuperiamo i metadata e l'importo corretto dalla Sessione
+    metadata = session.get('metadata', {})
     
+    print(f"--- DEBUG WEBHOOK: Dati Sessione: {session.get('id')} ---")
+    print(f"Metadata estratti: {metadata}")
+
     customer_id = metadata.get('customer_id')
     tipo = metadata.get('type')
+    
+    # 1. Calcolo importo corretto per Checkout Session
+    amount_total = session.get('amount_total', 0)
+    importo = Decimal(amount_total) / 100
 
     if not customer_id:
-      print("ATTENZIONE: customer_id assente. Se stai usando 'stripe trigger', è normale.")
-      return
+        print("ATTENZIONE: customer_id assente. Se stai usando 'stripe trigger', è normale.")
+        return
 
     try:
-      importo = Decimal(intent['amount']) / 100
-      wallet = Wallet.objects.get(user_id=customer_id)
-      print(f"OK: Wallet trovato per utente {customer_id}")
+        # 2. Recupero Wallet
+        wallet = Wallet.objects.get(user_id=customer_id)
+        print(f"OK: Wallet trovato per utente {customer_id}")
 
-      if tipo == 'WALLET_RELOAD':
-        wallet.balance += importo
-        wallet.save()
-        Transaction.objects.create(wallet=wallet, amount=importo, type='RELOAD', stripe_intent_id=intent['id'])
-        print(f"SUCCESSO: Ricarica di {importo}€ salvata.")
-      
-      elif tipo == 'APPOINTMENT_PAY':
-        ids = metadata.get('appointment_ids', '').split(',')
-        for app_id in ids:
-          if not app_id: continue
-          app = Appointment.objects.get(id=app_id)
-          app.amount_paid += app.remaining_amount
-          app.payment_status = 'PAID'
-          app.save()
-          print(f"APPUNTAMENTO {app_id} SALDATO.")
-        Transaction.objects.create(wallet=wallet, amount=importo, type='PAYMENT', stripe_intent_id=intent['id'], affects_wallet_balance=False)
+        # 3. Gestione Ricarica Wallet
+        if tipo == 'WALLET_RELOAD':
+            wallet.balance += importo
+            wallet.save()
+            
+            # Usiamo session.get('payment_intent') perché siamo in Checkout
+            Transaction.objects.create(
+                wallet=wallet, 
+                amount=importo, 
+                type='RELOAD', 
+                stripe_intent_id=session.get('payment_intent')
+            )
+            print(f"SUCCESSO: Ricarica di {importo}€ salvata.")
+        
+        # 4. Gestione Pagamento Appuntamento
+        elif tipo in ['APPOINTMENT', 'APPOINTMENT_PAY']:
+            ids_str = metadata.get('appointment_ids', '')
+            if ids_str:
+                ids = ids_str.split(',')
+                for app_id in ids:
+                    if not app_id or app_id == 'None': continue
+                    app = Appointment.objects.get(id=app_id)
+                    # Aggiorniamo lo stato dell'appuntamento
+                    app.amount_paid += importo 
+                    app.payment_status = 'PAID'
+                    app.save()
+                    print(f"APPUNTAMENTO {app_id} SALDATO.")
+            
+            # Registriamo la transazione (senza influire sul saldo wallet)
+            Transaction.objects.create(
+                wallet=wallet, 
+                amount=importo, 
+                type='PAYMENT', 
+                stripe_intent_id=session.get('payment_intent'), 
+                affects_wallet_balance=False
+            )
 
     except Exception as e:
-      print(f"DEBUG ERROR: {e}")
+        print(f"❌ DEBUG ERROR DURANTE SALVATAGGIO: {str(e)}")

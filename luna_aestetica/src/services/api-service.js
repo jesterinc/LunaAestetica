@@ -30,12 +30,53 @@ export class ApiService {
     })
   }
 
+  async cancellaPrenotazione(id) {
+  
+    const response = await this.http.post(`meets/appointments/${id}/cancel/`)
+    return response.ok
+  }
+
+  async createStripeCheckout(type, amount, appointmentIds = []) {
+
+    const payload = { type, amount, appointment_ids: appointmentIds }
+
+    const res = await this.http.post('payments/create-checkout-session/', JSON.stringify(payload))
+    
+    if (!res.ok) {
+
+      const errorData = await res.json()
+      throw new Error(errorData.error || "Errore creazione sessione")
+    }
+    
+    return res.json()
+  }
+
+  async getClientConfig() {
+  
+    try {
+
+      const response = await this.http.get('settings/client-config/')
+      return response
+    } 
+    catch (e) {
+
+      console.warn("Usando settaggi di default")
+      return { show_prices: true, cancellation_limit_hours: 24 }
+    }
+  }
+  
   async getDateDisponibili(durataParam) {
   
     const res = await this.http.get('offered/servizi/date_disponibili/')
     return res.ok ? res.json() : []
   }
   
+  async getMiePrenotazioni() {
+ 
+    const res = await this.http.get('meets/appointments/me/')
+    return res.json()
+  }
+
   async getOrariDisponibili(data, durata) {
   
     const url = `offered/servizi/orari_disponibili/?data=${data}&durata=${durata}`
@@ -57,20 +98,6 @@ export class ApiService {
     }
   }
 
-  async getMiePrenotazioni() {
-    
-    await new Promise(r => setTimeout(r, 500))
-    return [
-      {
-        servizio_nome: "Massaggio Decontratturante",
-        data: "2026-10-12",
-        ora_inizio: "14:30",
-        stato_codice: "CONF",
-        stato_testo: "Confermato"
-      }
-    ]
-  }
-
   async getOrariLiberi(data, servizioId) {
 
     const res = await this.http.get(`prenotazioni/orari_liberi/?data=${data}&servizio_id=${servizioId}`)
@@ -89,29 +116,12 @@ export class ApiService {
     return res.ok ? res.json() : []
   }
 
-  async salvaPrenotazione(payload) {
+  async getWalletStatus() {
   
-    console.log("Invio al server con token automatico:", payload)
-    
-    try {
-    
-      const response = await this.http.post('offered/servizi/prenota/', JSON.stringify(payload))
-      
-      if (!response.ok) {
-
-        const errorData = await response.json()
-        throw new Error(errorData.detail || "Errore nel salvataggio")
-      }
-
-      return await response.json()
-    } 
-    catch (e) {
-    
-      console.error("Errore API salvaPrenotazione:", e)
-      throw e
-    }
+    const res = await this.http.get('payments/wallet/')
+    return res.ok ? res.json() : { balance: 0 }
   }
-
+  
   async register(userData) {
     
     try {
@@ -138,29 +148,26 @@ export class ApiService {
     }
   }
 
-  async getClientConfig() {
+  async salvaPrenotazione(payload) {
   
+    console.log("Invio al server con token automatico:", payload)
+    
     try {
+    
+      const response = await this.http.post('offered/servizi/prenota/', JSON.stringify(payload))
+      
+      if (!response.ok) {
 
-      const response = await this.http.get('settings/client-config/')
-      return response
+        const errorData = await response.json()
+        throw new Error(errorData.detail || "Errore nel salvataggio")
+      }
+
+      return await response.json()
     } 
     catch (e) {
-
-      console.warn("Usando settaggi di default")
-      return { show_prices: true, cancellation_limit_hours: 24 }
+    
+      console.error("Errore API salvaPrenotazione:", e)
+      throw e
     }
-  }
-  
-  async getMiePrenotazioni() {
- 
-    const res = await this.http.get('meets/appointments/me/')
-    return res.json()
-  }
-
-  async cancellaPrenotazione(id) {
-  
-    const response = await this.http.post(`meets/appointments/${id}/cancel/`)
-    return response.ok
   }
 }

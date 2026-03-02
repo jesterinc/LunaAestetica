@@ -31,6 +31,20 @@ class AppointmentViewSet(viewsets.ModelViewSet):
   
     return Appointment.objects.filter(customer=self.request.user).order_by('-date')
 
+  def create(self, request, *args, **kwargs):
+  
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    appointment = serializer.save(customer=self.request.user)
+    total_price = sum(s.price for s in appointment.services.all())
+
+    return Response({
+       "status": "success",
+       "id": appointment.id,
+       "total_price": float(total_price),
+       "message": "Prenotazione creata con successo"
+    }, status=status.HTTP_201_CREATED)
+
   def perform_create(self, serializer):
   
     serializer.save(customer=self.request.user)

@@ -1,1 +1,135 @@
 /* src/pages/client/wallet.css */
+.info-box .service-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #444;
+    margin: 0;
+}
+
+.info-box .amount-due {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    color: #222;
+}
+
+.stripe-core {
+    min-height: 200px;
+}
+
+#payment-element {
+    margin-bottom: 2rem;
+}
+
+.btn-pay-main:hover:not(:disabled) {
+    background: #bc9a2f;
+    transform: translateY(-2px);
+}
+
+.balance-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+}
+
+.balance-info .price {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #d4af37;
+}
+
+.topup-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+#payment-message {
+    color: #df1b41;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.checkout-wrapper {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.checkout-section h4 {
+    font-size: 0.85rem;
+    color: #999;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+.reservation-pay {
+    background: #fdfaf5;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background: #eee;
+    margin: 2rem 0;
+}
+
+.btn-pay-main {
+    width: 100%;
+    background: #d4af37;
+    color: #fff;
+    border: none;
+    padding: 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.btn-pay-main:disabled {
+    background: #e0e0e0;
+    cursor: not-allowed;
+}
+
+.wallet-card {
+    text-align: center;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #d4af37;
+}
+
+.topup-btns {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.topup-btns button {
+    border: 1px solid #d4af37;
+    background: none;
+    color: #d4af37;
+    padding: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.topup-btns button:hover {
+    background: #d4af37;
+    color: #fff;
+}
+
+.hidden { display: none; }

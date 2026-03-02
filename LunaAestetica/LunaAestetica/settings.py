@@ -97,6 +97,7 @@ CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8080',  # Aurelia (se usa questa porta)
     'http://127.0.0.1:9000',  # Aurelia (porta standard)
+    'http://127.0.0.1:9001',  # Aurelia 
     'http://127.0.0.1:5173',  # Vite (se lo usi)
     'http://127.0.0.1:3000',
 ]
@@ -186,10 +187,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STRIPE_PUBLIC_KEY = "pk_live_51PMC75Dsfh4yrCb84ZiY0dnheGCXCKIRKa0kppEArpifuAZ4hkOLYfCKB20334fspYN7jWxs0LgIxUWZoiN9Shym00ZFKIas29"
-STRIPE_SECRET_KEY = "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"
-
-STRIPE_WEBHOOK_SECRET = "whsec_0f8c705b5407116544f4e50b6752f357bd6fe157aa8276ac21e779d01280c05b"
 
 NOTIFIES_KINDS = (
     ('pre','Nuova prenotazione'),
@@ -204,6 +201,10 @@ STATUS_CHOICES = [('PEND', 'In Arrivo'),('CONF', 'Confermato'),('CANC', 'Cancell
 WALLET_TRANSACTION_TYPES = [('RELOAD', 'Ricarica via Stripe'),('PAYMENT', 'Pagamento Appuntamento'),('REFUND', 'Rimborso (Credito)'),('CASH_OUT', 'Rimborso in Contanti (Manuale)'),('ADJUST', 'Rettifica Gestionale'),]
 
 PAYMENT_STATUS_CHOICES = [('UNPAID', 'Da Pagare'),('PARTIAL', 'Acconto Versato'),('PAID', 'Saldato'),('REFUNDED', 'Rimborsato nel Wallet'),]
+
+PAYMENT_CHOICES = [('NONE', 'Pagamento in sede'),('PARTIAL', 'Acconto percentuale'),('FIXED', 'Acconto fisso'),('FULL', 'Saldo totale anticipato'),]
+
+FRONTEND_URL = 'http://localhost:9001'
 
 AUTH_USER_MODEL = 'login.Users'
 
